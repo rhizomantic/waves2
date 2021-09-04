@@ -3,6 +3,8 @@ int len = 7;
 int loopLen = 300;
 int mode = 2;
 
+String rev = "9eecb63";
+
 float angVar = 0, scaleMult = 1, powMult = 1, latLonVar = 0;
 float off = 0.0;
 float dim;
@@ -26,7 +28,7 @@ int seed;
 
 String out_folder = "C:/Leo/1_work/capturas/processing/s068_waves2/";
 String p_folder = "C:/Leo/1_work/capturas/source_images/gradients/simple/";
-int p_file = 42;
+int p_file = 40;
 
 void setup() {
   size(540, 540, P2D);
@@ -36,7 +38,7 @@ void setup() {
   
   canvas = createGraphics(width*scale, height*scale, P2D);
   
-  palette = createImage(600, 10, RGB);
+  palette = createImage(600, 1, RGB);
       
   waves = new Wave[len];
   for(int i=0; i<len; i++) {
@@ -67,6 +69,7 @@ void draw() {
   if(rand){
     seed = int(random(99999));
     randomSeed(seed);
+    noiseSeed(seed);
     println("seed", seed);
     
     t = 0;
@@ -114,6 +117,7 @@ void draw() {
     
     image(canvas, 0, 0, width, height);
     
+    t++;
     paint = false;
   }
   
@@ -129,13 +133,8 @@ void draw() {
         println("movie saved in ", out_folder +'/'+ movieFolder);
       }
     }
-    
-    
-    
+
     paint = true;
-    t++;
-    
-    //canvas.save(out_folder + "loop01/"+ nf(t, 3)  + ".jpg");
   }
   
     
@@ -151,7 +150,7 @@ void draw() {
 }
 
 class Wave {
-  PVector pos;
+  PVector pos, ori, dest;
   float scale, force, ang, petals;
   float lat_lon, curved;
   float pwLat, pwLon;
@@ -163,12 +162,16 @@ class Wave {
   Wave(int i) {
     ix = i;
     pos = new PVector();
+    ori = new PVector();
+    dest = new PVector();
     gen = random(1);
     //reset();
   }
   
   void reset() {
     pos.set(random(1), random(1));
+    ori.set(pos.x, pos.y);
+    dest.set(random(1), random(1));
     //pos.set(0.5, 0.5);
     scale = random(0.2, 5);
     force = random(1);
@@ -181,8 +184,15 @@ class Wave {
   }
   
   void update(){
-    force = cos(gen*TWO_PI + t*(TWO_PI/loopLen))*0.5+0.5;
-    //if(ix == 1) println(t, force);
+    //force = cos(gen*TWO_PI + t*(TWO_PI/loopLen))*0.5+0.5;
+    //pos.x = contrast(noiseCirc(0.5, ix*4), 2);
+    //pos.y = contrast(noiseCirc(0.5, 8.5+float(ix*4)), 2);
+    float e = IO(float(t%loopLen)/loopLen, 1, false) + gen;
+    //pos.x = lerp(ori.x, dest.x, e);
+    //pos.y = lerp(ori.y, dest.y, e);
+    pos.x = ori.x + dest.x * cos(e * TWO_PI * 2 );
+    pos.y = ori.y + dest.x * sin(e * TWO_PI);
+    //if(ix == 1) println(float(t%loopLen)/loopLen);
   }
 
 }
@@ -282,7 +292,8 @@ void _keyPressed(){
 }
 
 String makeName(){
-  String out = "s068_"+ str(year()).substring(2) + nf(month(), 2) + nf(day(), 2) +".";
+  String out = "s068_"+ rev +"_seed"+ seed +"_t"+ t +"__";
+  out += str(year()).substring(2) + nf(month(), 2) + nf(day(), 2) +".";
   out += nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
   //out += "_len"+ len + "_a"+ nf(a, 1, 2) + "_b"+ nf(b, 1, 2) + "_c"+ nf(c, 1, 2);
   //out += "_am"+ amode + "_bm"+ bmode + "_cm"+ cmode + "_mode"+ mode ; 
