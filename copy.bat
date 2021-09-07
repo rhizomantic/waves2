@@ -1,0 +1,2 @@
+set /p Rev=<"G:\My Drive\code\Processing\sketchbook\3.0\s068_waves2\run.txt"
+copy /y "G:\My Drive\code\Processing\sketchbook\3.0\s068_waves2\s068_waves2.pde" "C:\Leo\1_work\capturas\processing\s068_waves2\%Rev%.pde"

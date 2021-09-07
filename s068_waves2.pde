@@ -1,9 +1,9 @@
 int scale = 2;
-int len = 7;
+int len = 4;
 int loopLen = 300;
 int mode = 2;
 
-String rev = "9eecb63";
+String rev = "g53c24f7";
 
 float angVar = 0, scaleMult = 1, powMult = 1, latLonVar = 0;
 float off = 0.0;
@@ -24,17 +24,19 @@ String movieFolder;
 int t = 0;
 int kto = 0;
 int seed;
+IntList seeds;
 
 
 String out_folder = "C:/Leo/1_work/capturas/processing/s068_waves2/";
 String p_folder = "C:/Leo/1_work/capturas/source_images/gradients/simple/";
-int p_file = 40;
+int p_file = 51;
 
 void setup() {
   size(540, 540, P2D);
   frameRate(30);
 
   dim = dist(0, 0, width*scale, height*scale);
+  seeds = new IntList();
   
   canvas = createGraphics(width*scale, height*scale, P2D);
   
@@ -48,8 +50,6 @@ void setup() {
   sh_wav = loadShader("waves.frag");
   sh_wav.set("size", float(width*scale), float(height*scale), dim);
   sh_wav.set("len", len);
-  
-  
   canvas.shader(sh_wav);
   
   loadPalette();
@@ -67,9 +67,10 @@ void loadPalette() {
 void draw() {
   
   if(rand){
-    seed = int(random(99999));
+    //seed = int(random(99999));
     randomSeed(seed);
     noiseSeed(seed);
+    seeds.append(seed);
     println("seed", seed);
     
     t = 0;
@@ -117,7 +118,7 @@ void draw() {
     
     image(canvas, 0, 0, width, height);
     
-    t++;
+    
     paint = false;
   }
   
@@ -130,16 +131,19 @@ void draw() {
       if(movieFrame >= loopLen) {
         makeMovie = false;
         movieFrame = 0;
-        println("movie saved in ", out_folder +'/'+ movieFolder);
+        println("movie saved in ", out_folder + movieFolder);
       }
     }
-
+    
+    t++;
     paint = true;
   }
   
     
   if(capture){
-    canvas.save(out_folder +  makeName()  + ".jpg");
+    canvas.save(out_folder +  makeName()  + ".jpg");  
+    
+    launch("G:/My Drive/code/Processing/sketchbook/3.0/s068_waves2/copy.bat");
     println("capture saved");
     capture = false;
   }
@@ -174,9 +178,9 @@ class Wave {
     dest.set(random(1), random(1));
     //pos.set(0.5, 0.5);
     scale = random(0.2, 5);
-    force = random(1);
+    force = 1;//random(1);
     ang = random(TWO_PI);   
-    petals = int(random(3, 9));
+    petals = 4;//int(random(3, 9));
     lat_lon = 1;//random(1);
     curved = 1;//random(1);
     pwLat = random(0.2, 5);
@@ -184,15 +188,16 @@ class Wave {
   }
   
   void update(){
-    //force = cos(gen*TWO_PI + t*(TWO_PI/loopLen))*0.5+0.5;
+    float e = cos( t*(TWO_PI/loopLen))*0.5+0.5;
     //pos.x = contrast(noiseCirc(0.5, ix*4), 2);
     //pos.y = contrast(noiseCirc(0.5, 8.5+float(ix*4)), 2);
-    float e = IO(float(t%loopLen)/loopLen, 1, false) + gen;
+    //float e = ease(float((ix*30+t)%loopLen)/loopLen, 3, false);
+    pwLon = e*9 + 0.1; 
     //pos.x = lerp(ori.x, dest.x, e);
     //pos.y = lerp(ori.y, dest.y, e);
-    pos.x = ori.x + dest.x * cos(e * TWO_PI * 2 );
-    pos.y = ori.y + dest.x * sin(e * TWO_PI);
-    //if(ix == 1) println(float(t%loopLen)/loopLen);
+    //pos.x = ori.x + dest.x * cos(e * TWO_PI * 2 );
+    //pos.y = ori.y + dest.x * sin(e * TWO_PI);
+    //if(ix == 2) println(float((ix*30+t)%loopLen)/loopLen);
   }
 
 }
@@ -271,6 +276,7 @@ void _keyPressed(){
       println("mode", mode);
       break;
     case 'r':
+      seed = int(random(99999));
       rand = true;;
       paint = true;
       println("randomize");
@@ -287,17 +293,39 @@ void _keyPressed(){
       movieFolder = makeName();
       makeMovie = true;
       movieFrame = 0;
+      t = 0;
       break;
+  }
+  
+  if (key == CODED) {
+    if (keyCode == UP) {
+
+    } else if (keyCode == DOWN) {
+
+    } else if (keyCode == LEFT) {
+      int sz = seeds.size();
+      println("history lenght:", sz);
+      if(sz > 1) {
+        seed = seeds.get(sz-2);
+        seeds.remove(sz-1);
+        seeds.remove(sz-2);
+        rand = true;
+        paint = true;
+      }
+    }  
   }
 }
 
 String makeName(){
-  String out = "s068_"+ rev +"_seed"+ seed +"_t"+ t +"__";
-  out += str(year()).substring(2) + nf(month(), 2) + nf(day(), 2) +".";
-  out += nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
+  String out = str(year()).substring(2) + nf(month(), 2) + nf(day(), 2) +"-"+ nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
+  out += "_rv"+ rev +"_sd"+ seed +"_md"+ mode +"_t"+ t;
+
   //out += "_len"+ len + "_a"+ nf(a, 1, 2) + "_b"+ nf(b, 1, 2) + "_c"+ nf(c, 1, 2);
   //out += "_am"+ amode + "_bm"+ bmode + "_cm"+ cmode + "_mode"+ mode ; 
   //out += "_balance"+ nf(balance, 1, 2) +"_limitMode"+ limitMode +"_limit"+ nf(limit, 1, 2);
+  
+  String[] sts = {out};
+  saveStrings( "run.txt", sts );
   
   return out;
 }
