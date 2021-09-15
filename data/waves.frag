@@ -49,26 +49,13 @@ void main(void) {
 	for(int i=0; i<len; i++) {
 		a = waves[i].y - atan(locs[i].y - pos.y, locs[i].x - pos.x);
 		d = distance(locs[i].xy, pos.xy);
-		//n = d * sin(a) / waves[i].y;
-		//n = (d / waves[i].y) * 0.5;// + (d * sin(a) / waves[i].y) * 0.5;
-		//val += pow( cos( PI * n ) * 0.5 + 0.5, waves[i].z );
-		//val += pow( sin( a * 2. ) * 0.5 + 0.5, waves[i].z ) * pow( cos( PI * n ) * 0.5 + 0.5, waves[i].z );
-		//val += d * waves[i].y; // aureolas muy simples
-		//val += sin( PI * 2 * d * waves[i].y) * 0.5 + 0.5;
 
-		//n = d * sin(a) * waves[i].y * 2;
-		//np = pow(fract(n), waves[i].z);
-		//val += mod(floor(n), 2.) == 0. ? 1.-np : np;
-
-		//val += pow(cos( a * 5. ) * 0.5 + 0.5, waves[i].z);
-		//val += swing((a/PI) * 5., pows[i].y);
-
-
-		lat = swing( mix(d*sin(a), d, mixes[i].y) * locs[i].z * 2, pows[i].x);
-		//lat = pow(sin(d * PI * locs[i].z), pows[i].x);
+		//lat = swing( mix(d*sin(a), d, mixes[i].y) * locs[i].z * 2, pows[i].x);
+		lat = pow(sin(mix(d*sin(a), d, mixes[i].y) * PI * locs[i].z), pows[i].x);
 		lon = pow(cos(a * waves[i].z)*0.5+0.5, pows[i].y);
 		//lon = swing((a/PI) * waves[i].z, pows[i].y);
 		val += mix(lat, lon, mixes[i].x) * waves[i].x;
+		//val += mix(lat, lon, mixes[i].x) * clamp(1. - d/waves[i].x, 0., 1.);
 
 	}
 

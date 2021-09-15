@@ -1,9 +1,9 @@
 int scale = 2;
-int len = 4;
+int len = 5;
 int loopLen = 300;
-int mode = 2;
+int mode = 0;
 
-String rev = "g53c24f7";
+String rev = "19413cd";
 
 float angVar = 0, scaleMult = 1, powMult = 1, latLonVar = 0;
 float off = 0.0;
@@ -37,6 +37,7 @@ void setup() {
 
   dim = dist(0, 0, width*scale, height*scale);
   seeds = new IntList();
+  seed = int(random(99999));
   
   canvas = createGraphics(width*scale, height*scale, P2D);
   
@@ -173,31 +174,37 @@ class Wave {
   }
   
   void reset() {
+
     pos.set(random(1), random(1));
+    //pos.set(0.5, 0.5);
     ori.set(pos.x, pos.y);
     dest.set(random(1), random(1));
     //pos.set(0.5, 0.5);
-    scale = random(0.2, 5);
+    scale = random(0.5, 6);//float(seed) / 9999.;//
     force = 1;//random(1);
-    ang = random(TWO_PI);   
-    petals = 4;//int(random(3, 9));
-    lat_lon = 1;//random(1);
-    curved = 1;//random(1);
-    pwLat = random(0.2, 5);
-    pwLon = 1;//random(0.2, 5);
+    ang = random(TWO_PI); //PI/float(len) * ix;//  
+    petals = int(random(3, 9));
+    lat_lon = 0;//random(1);
+    curved = 0;//random(1);
+    pwLat = 2;//random(0.2, 5);
+    pwLon = 2;//random(0.2, 5);
   }
   
   void update(){
-    float e = cos( t*(TWO_PI/loopLen))*0.5+0.5;
+    //float e = cos( t*(TWO_PI/loopLen))*0.5+0.5;
+    float _t = float(t%loopLen), _l = float(loopLen)/2.;
+    
+    float e = _t < _l ? ease2("IO2", _t, 0, 1, _l) : 1. - ease2("IO2", _t-_l, 0, 1, _l);
+    //float e = ease2("IO2", _t, 0, 1, loopLen);
     //pos.x = contrast(noiseCirc(0.5, ix*4), 2);
     //pos.y = contrast(noiseCirc(0.5, 8.5+float(ix*4)), 2);
     //float e = ease(float((ix*30+t)%loopLen)/loopLen, 3, false);
-    pwLon = e*9 + 0.1; 
+    scale = 1 +e*12; 
     //pos.x = lerp(ori.x, dest.x, e);
     //pos.y = lerp(ori.y, dest.y, e);
-    //pos.x = ori.x + dest.x * cos(e * TWO_PI * 2 );
+    //pos.x = ori.x + dest.x * cos(e * TWO_PI );
     //pos.y = ori.y + dest.x * sin(e * TWO_PI);
-    //if(ix == 2) println(float((ix*30+t)%loopLen)/loopLen);
+    //if(ix == 0) println( e );
   }
 
 }
