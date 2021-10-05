@@ -50,8 +50,8 @@ void main(void) {
 		a = waves[i].y - atan(locs[i].y - pos.y, locs[i].x - pos.x);
 		d = distance(locs[i].xy, pos.xy);
 
-		//lat = swing( mix(d*sin(a), d, mixes[i].y) * locs[i].z * 2, pows[i].x);
-		lat = pow(sin(mix(d*sin(a), d, mixes[i].y) * PI * locs[i].z), pows[i].x);
+		lat = swing( mix(d*sin(a), d, mixes[i].y) * locs[i].z , pows[i].x);
+		//lat = pow(sin(mix(d*sin(a), d, mixes[i].y) * PI * locs[i].z), pows[i].x);
 		lon = pow(cos(a * waves[i].z)*0.5+0.5, pows[i].y);
 		//lon = swing((a/PI) * waves[i].z, pows[i].y);
 		val += mix(lat, lon, mixes[i].x) * waves[i].x;

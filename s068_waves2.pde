@@ -3,7 +3,7 @@ int len = 5;
 int loopLen = 300;
 int mode = 0;
 
-String rev = "19413cd";
+String rev = "e60563f";
 
 float angVar = 0, scaleMult = 1, powMult = 1, latLonVar = 0;
 float off = 0.0;
@@ -29,7 +29,7 @@ IntList seeds;
 
 String out_folder = "C:/Leo/1_work/capturas/processing/s068_waves2/";
 String p_folder = "C:/Leo/1_work/capturas/source_images/gradients/simple/";
-int p_file = 51;
+int p_file = 42;
 
 void setup() {
   size(540, 540, P2D);
@@ -156,7 +156,7 @@ void draw() {
 
 class Wave {
   PVector pos, ori, dest;
-  float scale, force, ang, petals;
+  float scale, force, ang, _ang, petals;
   float lat_lon, curved;
   float pwLat, pwLon;
   float gen;
@@ -180,12 +180,12 @@ class Wave {
     ori.set(pos.x, pos.y);
     dest.set(random(1), random(1));
     //pos.set(0.5, 0.5);
-    scale = random(0.5, 6);//float(seed) / 9999.;//
+    scale = random(0.5, 5);//float(seed) / 9999.;//
     force = 1;//random(1);
-    ang = random(TWO_PI); //PI/float(len) * ix;//  
-    petals = int(random(3, 9));
-    lat_lon = 0;//random(1);
-    curved = 0;//random(1);
+    _ang = random(TWO_PI); //PI/float(len) * ix;//  
+    petals = 2;//int(random(3, 9));
+    lat_lon = 1;//random(1);
+    curved = random(1);
     pwLat = 2;//random(0.2, 5);
     pwLon = 2;//random(0.2, 5);
   }
@@ -194,12 +194,12 @@ class Wave {
     //float e = cos( t*(TWO_PI/loopLen))*0.5+0.5;
     float _t = float(t%loopLen), _l = float(loopLen)/2.;
     
-    float e = _t < _l ? ease2("IO2", _t, 0, 1, _l) : 1. - ease2("IO2", _t-_l, 0, 1, _l);
-    //float e = ease2("IO2", _t, 0, 1, loopLen);
+    //float e = _t < _l ? ease2("IO2", _t, 0, 1, _l) : 1. - ease2("IO2", _t-_l, 0, 1, _l);
+    float e = ease2("IO2", _t, 0, 1, loopLen);
     //pos.x = contrast(noiseCirc(0.5, ix*4), 2);
     //pos.y = contrast(noiseCirc(0.5, 8.5+float(ix*4)), 2);
     //float e = ease(float((ix*30+t)%loopLen)/loopLen, 3, false);
-    scale = 1 +e*12; 
+    ang = _ang + e * TWO_PI; 
     //pos.x = lerp(ori.x, dest.x, e);
     //pos.y = lerp(ori.y, dest.y, e);
     //pos.x = ori.x + dest.x * cos(e * TWO_PI );
