@@ -1,9 +1,11 @@
+import java.util.Map;
+
 int scale = 2;
-int len = 5;
+int len = 3;
 int loopLen = 300;
 int mode = 0;
 
-String rev = "e60563f";
+String rev = "bb5488";
 
 float angVar = 0, scaleMult = 1, powMult = 1, latLonVar = 0;
 float off = 0.0;
@@ -28,8 +30,8 @@ IntList seeds;
 
 
 String out_folder = "C:/Leo/1_work/capturas/processing/s068_waves2/";
-String p_folder = "C:/Leo/1_work/capturas/source_images/gradients/simple/";
-int p_file = 42;
+String p_folder = "C:/Leo/1_work/capturas/source_images/gradients/simple2/";
+int p_file = 1;
 
 void setup() {
   size(540, 540, P2D);
@@ -133,6 +135,7 @@ void draw() {
         makeMovie = false;
         movieFrame = 0;
         println("movie saved in ", out_folder + movieFolder);
+        //launch("G:/My Drive/code/Processing/sketchbook/3.0/s068_waves2/vid.bat");
       }
     }
     
@@ -160,6 +163,7 @@ class Wave {
   float lat_lon, curved;
   float pwLat, pwLon;
   float gen;
+  HashMap<String,Tween> tweens;
   
   color col;
   int ix;
@@ -170,6 +174,7 @@ class Wave {
     ori = new PVector();
     dest = new PVector();
     gen = random(1);
+    tweens = new HashMap<String,Tween>();
     //reset();
   }
   
@@ -182,12 +187,35 @@ class Wave {
     //pos.set(0.5, 0.5);
     scale = random(0.5, 5);//float(seed) / 9999.;//
     force = 1;//random(1);
-    _ang = random(TWO_PI); //PI/float(len) * ix;//  
-    petals = 2;//int(random(3, 9));
-    lat_lon = 1;//random(1);
+    ang = random(TWO_PI); //PI/float(len) * ix;//  
+    petals = 1;//int(random(3, 9));
+    lat_lon = 0;//random(1);
     curved = random(1);
     pwLat = 2;//random(0.2, 5);
     pwLon = 2;//random(0.2, 5);
+    
+    int i, n = 4;
+    Tween tw;
+    
+    /*tw = new Tween("IO4");
+    for(i = 0; i < n; i++) tw.val(random(1));
+    tw.close();
+    tweens.put("posx", tw);
+    
+    tw = new Tween("IO4");
+    for(i = 0; i < n; i++) tw.val(random(1));
+    tw.close();
+    tweens.put("posy", tw);*/
+    
+    /*tw = new Tween("IO2");
+    for(i = 0; i < n; i++) tw.val(random(1));
+    tw.close();
+    tweens.put("force", tw);*/
+    
+    tw = new Tween("Cycle");
+    tw.val(random(1));
+    tweens.put("curved", tw);
+    
   }
   
   void update(){
@@ -195,16 +223,32 @@ class Wave {
     float _t = float(t%loopLen), _l = float(loopLen)/2.;
     
     //float e = _t < _l ? ease2("IO2", _t, 0, 1, _l) : 1. - ease2("IO2", _t-_l, 0, 1, _l);
-    float e = ease2("IO2", _t, 0, 1, loopLen);
+    float e = ease2("None", _t, 0, 1, loopLen);
     //pos.x = contrast(noiseCirc(0.5, ix*4), 2);
     //pos.y = contrast(noiseCirc(0.5, 8.5+float(ix*4)), 2);
     //float e = ease(float((ix*30+t)%loopLen)/loopLen, 3, false);
-    ang = _ang + e * TWO_PI; 
+    //ang = _ang + e * TWO_PI; 
     //pos.x = lerp(ori.x, dest.x, e);
     //pos.y = lerp(ori.y, dest.y, e);
     //pos.x = ori.x + dest.x * cos(e * TWO_PI );
     //pos.y = ori.y + dest.x * sin(e * TWO_PI);
     //if(ix == 0) println( e );
+    
+    for (Map.Entry tw : tweens.entrySet()) {
+      String _prop = (String) tw.getKey();
+      Tween _tween = (Tween) tw.getValue();
+      float v = _tween.step();
+      switch(_prop) {
+        case "posx": pos.x = v; break;
+        case "posy": pos.y = v; break;
+        case "ang": ang = v; break;
+        case "force": force = v; break;
+        case "lat_lon": lat_lon = v; break;
+        case "curved": curved = v; break;
+        case "pwLat": pwLat = v; break;
+        case "pwLon": pwLon = v; break;
+      }
+    }
   }
 
 }

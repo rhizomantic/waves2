@@ -1,3 +1,37 @@
+class Tween {
+  String e;
+  FloatList vals;
+  float step;
+  
+  Tween(String _e) {
+    e = _e;
+    vals = new FloatList();
+  }
+  
+  void val(float _v){
+    vals.append(_v);
+    step = float(loopLen) / (vals.size()-1);
+  }
+  
+  void close() {
+    vals.append(vals.get(0));
+    step = float(loopLen) / (vals.size()-1);
+  }
+  
+  float step(){
+    float _t = float(t % loopLen);
+    int _s = floor(_t / step);
+    
+    if( e == "Cycle") return cos((vals.get(0) + _t / float(loopLen)) * TWO_PI) * 0.5 + 0.5;
+    return ease2(e, _t % step, vals.get(_s), vals.get(_s+1)-vals.get(_s), step);
+  }
+  
+  /*void step(){
+    float _t = float(t%loopLen);
+    w[p] = ease2(e, _t, 0, 1, loopLen);
+  }*/
+}
+
 float noiseCirc(float r, float z) {
   float a = float(t % loopLen) / float(loopLen) * TWO_PI;
   //println(cos(a));

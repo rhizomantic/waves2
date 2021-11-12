@@ -50,8 +50,8 @@ void main(void) {
 		a = waves[i].y - atan(locs[i].y - pos.y, locs[i].x - pos.x);
 		d = distance(locs[i].xy, pos.xy);
 
-		lat = swing( mix(d*sin(a), d, mixes[i].y) * locs[i].z , pows[i].x);
-		//lat = pow(sin(mix(d*sin(a), d, mixes[i].y) * PI * locs[i].z), pows[i].x);
+		//lat = swing( mix(d*sin(a), d, mixes[i].y) * locs[i].z , pows[i].x);
+		lat = pow(sin(mix(d*sin(a), d, mixes[i].y) * PI * locs[i].z), pows[i].x);
 		lon = pow(cos(a * waves[i].z)*0.5+0.5, pows[i].y);
 		//lon = swing((a/PI) * waves[i].z, pows[i].y);
 		val += mix(lat, lon, mixes[i].x) * waves[i].x;
@@ -63,13 +63,13 @@ void main(void) {
 	if( mode == 0 ){
 		val /= float(len);
 	} else if( mode == 1 ){
-		val = contrast(val/float(len), 2);
+		val = clamp( contrast(val/float(len), 2), 0.0001, 0.9999);
 	} else if( mode == 2 ){
 		val = mod(floor(val), 2.) == 0. ? fract(val) : 1.-fract(val);
 	} else if( mode == 3 ){
-		val = cos(PI*val) * 0.5 + 0.5;
+		val = clamp( cos(PI*val) * 0.5 + 0.5, 0.0001, 0.9999);
 	} else if( mode == 4 ){
-		val = fract(val);
+		val = clamp( fract(val), 0.001, 0.999);
 	}
 
 	res = texture2D( palette, vec2( fract(val+off), 0.5 ) );
